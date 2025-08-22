@@ -508,13 +508,6 @@ class CloudScraper(Session):
             if self.debug:
                 print(f'⏱️ Request throttling: sleeping {sleep_time:.2f}s')
             time.sleep(sleep_time)
-
-        # Wait if too many concurrent requests
-        while self.current_concurrent_requests >= self.max_concurrent_requests:
-            if self.debug:
-                print(f'🚦 Concurrent request limit reached ({self.current_concurrent_requests}/{self.max_concurrent_requests}), waiting...')
-            time.sleep(0.1)
-
         self.last_request_time = time.time()
 
     def _rotate_tls_cipher_suite(self):
