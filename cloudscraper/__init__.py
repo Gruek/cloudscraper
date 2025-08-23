@@ -169,6 +169,7 @@ class CloudScraper(Session):
         self.auto_refresh_on_403 = kwargs.pop('auto_refresh_on_403', True)
         self.max_403_retries = kwargs.pop('max_403_retries', 3)
         self._403_retry_count = 0
+        self._in_403_retry = False
 
         # Request throttling and TLS management
         self.last_request_time = 0
@@ -386,7 +387,7 @@ class CloudScraper(Session):
             # Reset depth on success
             if not response.is_redirect and response.status_code not in (429, 503):
                 self._solveDepthCnt = 0
-                if response.status_code == 200 and not hasattr(self, '_in_403_retry'):
+                if response.status_code == 200 and not self._in_403_retry:
                     self._403_retry_count = 0
 
             # Auto-refresh on 403
@@ -404,7 +405,7 @@ class CloudScraper(Session):
                                 **{**kwargs, '_skip_throttle': True}
                             )
                         finally:
-                            del self._in_403_retry
+                            self._in_403_retry = False
 
             return response
 
